@@ -180,6 +180,26 @@ public class RequestQueue {
         }
     }
 
+    public boolean isRequestInQueue(final String tag) {
+        return isRequestInQueue(new RequestFilter() {
+            @Override
+            public boolean apply(Request<?> request) {
+                return request.getTag() == tag;
+            }
+        });
+    }
+
+    private boolean isRequestInQueue(RequestFilter requestFilter){
+        synchronized (mCurrentRequests) {
+            for (Request<?> request : mCurrentRequests) {
+                if (requestFilter.apply(request)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     /**
      * Cancels all requests in this queue with the given tag. Tag must be non-null and equality is
      * by identity.
